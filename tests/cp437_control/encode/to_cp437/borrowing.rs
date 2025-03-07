@@ -1,3 +1,4 @@
+#![cfg(feature = "std")]
 use self::super::super::super::{VARIANTS_UTF8, ALL_UTF8, is_borrowed};
 use codepage_437::{CP437_CONTROL, ToCp437};
 

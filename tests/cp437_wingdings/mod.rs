@@ -1,3 +1,4 @@
+#![cfg(feature = "std")]
 use std::borrow::Cow;
 
 mod decode;

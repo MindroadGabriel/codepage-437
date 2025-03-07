@@ -151,6 +151,7 @@ fn main() {
         writeln!(specs_rs, "").unwrap();
         writeln!(specs_rs, "\tencode: {},", encode_func).unwrap();
         writeln!(specs_rs, "").unwrap();
+        writeln!(specs_rs, r##" #[cfg(feature = "std")]"##).unwrap();
         writeln!(specs_rs, "\tremaps: Cow::Borrowed(&[]),").unwrap();
         writeln!(specs_rs, "}};").unwrap();
         writeln!(specs_rs, "").unwrap();

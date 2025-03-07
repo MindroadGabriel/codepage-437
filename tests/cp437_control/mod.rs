@@ -10,6 +10,7 @@ const VARIANTS_CP437: &[u8] = include_bytes!("../../test-data/cp437_control/vari
 const VARIANTS_UTF8: &str = include_str!("../../test-data/cp437_control/variants.utf8");
 
 
+#[cfg(feature = "std")]
 fn is_borrowed<T: ToOwned + ?Sized>(who: &Cow<T>) -> bool {
     match who {
         &Cow::Borrowed(_) => true,

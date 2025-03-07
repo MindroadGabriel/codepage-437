@@ -4,7 +4,7 @@ description = "Codepage 437 transcoding for Rust"
 documentation = "https://rawcdn.githack.com/nabijaczleweli/codepage-437/doc/codepage_437/index.html"
 repository = "https://github.com/nabijaczleweli/codepage-437"
 readme = "README.md"
-keywords = ["windows", "dos", "code", "page"]
+keywords = ["windows", "dos", "code", "page", "no_std"]
 categories = ["encoding"]
 license = "MIT"
 build = "build.rs"
@@ -16,3 +16,7 @@ exclude = ["*.enc"]
 
 [build-dependencies]
 csv = "1.0.0-beta.5"
+
+[features]
+std = []
+default = ["std"]

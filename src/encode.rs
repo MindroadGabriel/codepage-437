@@ -1,3 +1,4 @@
+#![cfg(feature = "std")]
 use self::super::Cp437Dialect;
 use std::borrow::Cow;
 

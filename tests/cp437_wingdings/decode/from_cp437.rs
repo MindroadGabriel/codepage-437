@@ -1,3 +1,4 @@
+#![cfg(feature = "std")]
 use codepage_437::{CP437_WINGDINGS, FromCp437};
 use self::super::super::super::ALL_CP437;
 use self::super::super::ALL_UTF8;

@@ -1,3 +1,4 @@
+#![cfg(feature = "std")]
 use codepage_437::{CP437_CONTROL, BorrowFromCp437};
 use self::super::super::super::is_borrowed;
 use std::borrow::Cow;

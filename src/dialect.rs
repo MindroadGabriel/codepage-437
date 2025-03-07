@@ -1,6 +1,13 @@
+#[cfg(feature = "std")]
 use std::hash::{Hasher, Hash};
+#[cfg(feature = "std")]
 use std::borrow::Cow;
-use std::{cmp, fmt};
+#[cfg(feature = "std")]
+use std::cmp;
+#[cfg(feature = "std")]
+use std::fmt;
+#[cfg(not(feature = "std"))]
+use core::fmt;
 
 
 /// Specifier for the specific kind of cp437.
@@ -16,20 +23,33 @@ pub struct Cp437Dialect {
     encode: fn(unicode: char) -> Option<u8>,
 
     /// cp437, from, to
+    #[cfg(feature = "std")]
     remaps: Cow<'static, [(u8, char, char)]>,
 }
 
 impl Cp437Dialect {
     /// Check, whether the specified Unicode codepoint overlaps with a cp437 one.
     #[inline]
+    #[cfg(feature = "std")]
     pub fn overlap_unicode(&self, unicode: char) -> bool {
         (self.overlap_unicode)(unicode) && !self.remaps.iter().rev().find(|&&(_, _, to)| to == unicode).is_some()
+    }
+    #[inline]
+    #[cfg(not(feature = "std"))]
+    pub fn overlap_unicode(&self, unicode: char) -> bool {
+        (self.overlap_unicode)(unicode)
     }
 
     /// Check, whether the specified cp437 codepoint overlaps with a Unicode one.
     #[inline]
+    #[cfg(feature = "std")]
     pub fn overlap_cp437(&self, cp437: u8) -> bool {
         (self.overlap_cp437)(cp437) && !self.remaps.iter().rev().find(|&&(whom, _, _)| whom == cp437).is_some()
+    }
+    #[inline]
+    #[cfg(not(feature = "std"))]
+    pub fn overlap_cp437(&self, cp437: u8) -> bool {
+        (self.overlap_cp437)(cp437)
     }
 
     /// Decode a single cp437 codepoint into a Unicode one.
@@ -40,8 +60,13 @@ impl Cp437Dialect {
 
     /// Try to encode a single Unicode codepoint as a cp437 one.
     #[inline]
+    #[cfg(feature = "std")]
     pub fn encode(&self, unicode: char) -> Option<u8> {
         self.remaps.iter().rev().find(|&&(_, _, to)| to == unicode).map(|&(whom, _, _)| whom).or_else(|| (self.encode)(unicode))
+    }
+    #[cfg(not(feature = "std"))]
+    pub fn encode(&self, unicode: char) -> Option<u8> {
+        (self.encode)(unicode)
     }
 
     /// Map the specified cp437 codepoint mapped to the specified unicode character instead.
@@ -58,6 +83,7 @@ impl Cp437Dialect {
     /// mapping.remap(square_root_or_checkmark, '✓');
     /// assert_eq!(mapping.decode(square_root_or_checkmark), '✓');
     /// ```
+    #[cfg(feature = "std")]
     pub fn remap(&mut self, cp437: u8, unicode: char) -> &mut Cp437Dialect {
         self.remaps.to_mut().push((cp437, self.cp437_to_unicode[cp437 as usize], unicode));
         self.cp437_to_unicode[cp437 as usize] = unicode;
@@ -66,6 +92,7 @@ impl Cp437Dialect {
 }
 
 // These traits are implemented manually, because rustc is at a loss for big arrays (like the 256 one).
+#[cfg(feature = "std")]
 impl fmt::Debug for Cp437Dialect {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
         f.debug_struct("Cp437Dialect")
@@ -77,7 +104,19 @@ impl fmt::Debug for Cp437Dialect {
             .finish()
     }
 }
+#[cfg(not(feature = "std"))]
+impl fmt::Debug for Cp437Dialect {
+    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+        f.debug_struct("Cp437Dialect")
+            .field("cp437_to_unicode", &&self.cp437_to_unicode[..])
+            .field("overlap_unicode", &self.overlap_unicode)
+            .field("overlap_cp437", &self.overlap_cp437)
+            .field("encode", &self.encode)
+            .finish()
+    }
+}
 
+#[cfg(feature = "std")]
 impl Hash for Cp437Dialect {
     fn hash<H: Hasher>(&self, state: &mut H) {
         self.cp437_to_unicode[..].hash(state);
@@ -88,8 +127,10 @@ impl Hash for Cp437Dialect {
     }
 }
 
+#[cfg(feature = "std")]
 impl cmp::Eq for Cp437Dialect {}
 
+#[cfg(feature = "std")]
 impl cmp::PartialEq for Cp437Dialect {
     fn eq(&self, other: &Cp437Dialect) -> bool {
         self.cp437_to_unicode[..] == other.cp437_to_unicode[..] &&  // align
@@ -100,6 +141,7 @@ impl cmp::PartialEq for Cp437Dialect {
     }
 }
 
+#[cfg(feature = "std")]
 impl cmp::Ord for Cp437Dialect {
     fn cmp(&self, other: &Cp437Dialect) -> cmp::Ordering {
         self.cp437_to_unicode[..]
@@ -111,6 +153,7 @@ impl cmp::Ord for Cp437Dialect {
     }
 }
 
+#[cfg(feature = "std")]
 impl cmp::PartialOrd for Cp437Dialect {
     fn partial_cmp(&self, other: &Cp437Dialect) -> Option<cmp::Ordering> {
         Some(self.cmp(other))
